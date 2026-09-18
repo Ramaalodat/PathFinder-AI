@@ -1,136 +1,160 @@
-# Welcome to PathFinder AI 🧭
+<div align="center">
 
-**Your Smart Travel Companion - AI Tourist Guide Agent**
+  # 🧭 PathFinder AI
+  ### *Your Intelligent Multilingual AI Tourist Guide & Travel Companion*
 
-PathFinder AI is a Gemini-powered multilingual AI agent that acts as your intelligent travel buddy, helping you navigate foreign countries with confidence and ease. Whether you're exploring bustling cities or remote destinations, PathFinder AI has got your back!
+  [![Gemini AI](https://img.shields.io/badge/Powered%20By-Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
+  [![Flutter](https://img.shields.io/badge/Frontend-Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)](https://flutter.dev)
+  [![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+  [![Firebase](https://img.shields.io/badge/Auth-Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
+  [![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20Web-brightgreen?style=for-the-badge)](https://flutter.dev)
 
-## 🌟 Features
+  ---
 
-### 🔄 Real-Time Translation (Text + Audio)
-- **Instant multilingual communication**: Speaks and translates conversations into multiple languages in real-time
-- **Local interaction support**: Helps tourists communicate with taxi drivers, shopkeepers, and locals
-- **Audio translation**: Voice-to-voice translation for seamless conversations
+  <p align="center">
+    <b>PathFinder AI</b> empowers tourists to navigate foreign destinations with confidence. Powered by Google Gemini on Vertex AI, it combines real-time voice translation, scam detection, local transport routing, and social travel matching into a seamless mobile experience.
+  </p>
 
-### 🛡️ Scam Prevention & Price Advisor
-- **Smart price comparison**: Gemini AI compares item/taxi prices against local market averages
-- **Fraud detection**: Warns users if prices are suspiciously high
-- **Ideal pricing guidance**: Suggests the "ideal price range" for food, taxis, souvenirs, and services
-
-### 🎯 Personalized Recommendations
-- **Tailored suggestions**: Recommends attractions, restaurants, and activities based on your budget and preferences
-- **Cultural insights**: Explains local etiquette, do's and don'ts for respectful travel
-- **Budget-conscious planning**: Helps you make the most of your trip within your financial constraints
-
-### 🚌 Local Transportation Helper
-- **Smart routing**: Explains the best ways to get around (bus, metro, rideshare, walking)
-- **Live directions**: Provides real-time navigation and route updates
-- **Cost transparency**: Shows ticket costs and estimated travel times
-- **Traffic optimization**: Finds the shortest routes with minimal traffic
-
-### 👥 Travel Matching
-- **Connect with fellow travelers**: Match with other people in your area to visit places together
-- **Solo traveler support**: Especially helpful for alone travelers looking for companions
-- **Shared experiences**: Discover hidden gems through local connections
-
-## 🚀 How to Run
-
-### Frontend (Flutter Mobile App)
-
-1. **Navigate to the frontend directory:**
-   ```bash
-   cd front
-   ```
-
-2. **Analyze the Flutter code:**
-   ```bash
-   flutter analyze
-   ```
-
-3. **Install dependencies:**
-   ```bash
-   flutter pub get
-   ```
-
-4. **Run the application:**
-   ```bash
-   flutter run
-   ```
-   - When prompted, **select Android app** to run on your Android device/emulator
-
-### Backend (Node.js Server)
-
-1. **Open a new terminal and navigate to the backend directory:**
-   ```bash
-   cd back
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
-
-## 📱 Supported Platforms
-
-- **Mobile**: Android (Flutter)
-- **Web**: Progressive Web App support
-- **Backend**: Node.js server with REST API
-
-## 🛠️ Tech Stack & APIs
-
-### Frontend
-- **Flutter**: Cross-platform mobile development
-- **Dart**: Programming language
-
-### Backend
-- **Node.js**: Server runtime
-- **Express.js**: Web framework
-
-### Core AI & Services
-- **Gemini from Vertex AI**: Main AI brain for intelligent responses and recommendations
-- **Firebase**: Authentication and user management
-
-### Google Cloud APIs
-- **Google Maps JavaScript API**: Interactive maps and location services
-- **Google GeoCoding API**: Address to coordinates conversion
-- **Google GeoLocation API**: Real-time location detection
-- **Google Weather API**: Weather information and forecasts
-- **Google Cloud Text To Speech API**: Voice synthesis for audio responses
-- **Google Cloud Speech To Text API**: Voice recognition and transcription
-- **Google Custom Search API**: Enhanced search capabilities
-
-### External APIs
-- **CurrencyAPI**: Real-time currency conversion and exchange rates
-- **And many more**: Additional APIs for enhanced functionality and data sources
-
-## 🌍 Supported Languages
-
-PathFinder AI supports multiple languages for seamless communication across different regions and cultures.
-
-## 📋 Prerequisites
-
-- Flutter SDK (for mobile app development)
-- Node.js and npm (for backend server)
-- Android Studio/Android device (for mobile testing)
-- Google Cloud Platform account (for AI services)
-
-## 👥 Team GOOGLEISTS
-
-- **[Mohammad Al-Majali](https://github.com/MavisVermie)** - Backend
-- **[Marah Al-Qunbor](https://github.com/MarahYousef01/)** - Backend
-- **Rama Al-Odat** - Frontend
-- **Mohammad Al-Ali** - Frontend
-
-## 🤝 Contributing
-
-We welcome contributions to make PathFinder AI even better! Whether it's adding new languages, improving AI recommendations, or enhancing the user experience, your input is valuable.
+</div>
 
 ---
 
-**Happy Travels with PathFinder AI! 🌍✈️**
+## 📸 Key Highlights & Features
 
-*Your intelligent travel companion for every adventure.*
+<table>
+  <tr>
+    <td width="50%">
+      <h3>🎙️ Real-Time Voice & Text Translation</h3>
+      <ul>
+        <li><b>Speech-to-Speech:</b> Instant voice-to-voice translation for smooth local conversations.</li>
+        <li><b>Multilingual Support:</b> Overcomes language barriers with drivers, vendors, and locals.</li>
+        <li><b>Context-Aware:</b> Understands travel slang and localized phrasing.</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3>🛡️ Scam Prevention & Price Advisor</h3>
+      <ul>
+        <li><b>Smart Price Check:</b> Compares local item/taxi prices against market averages.</li>
+        <li><b>Fraud Alert:</b> Warns users instantly if prices are inflated or suspicious.</li>
+        <li><b>Fair Price Guide:</b> Gives optimal price ranges for food, transport, and souvenirs.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>🎯 Personalized Recommendations</h3>
+      <ul>
+        <li><b>Budget-Tailored:</b> Recommends attractions, dining, and activities based on budget.</li>
+        <li><b>Cultural Etiquette:</b> Guidance on local customs, do's, and don'ts.</li>
+        <li><b>Dynamic Itineraries:</b> Adaptive travel plans according to real-time weather and location.</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3>🚌 Smart Transportation & Social Matching</h3>
+      <ul>
+        <li><b>Live Navigation:</b> Optimal public transit, walking, and rideshare directions.</li>
+        <li><b>Traffic & Cost Optimization:</b> Displays ticket estimates and fastest routes.</li>
+        <li><b>Traveler Companion Match:</b> Connects solo travelers to explore nearby sights together.</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+---
+
+## 🏗️ Architecture & Tech Stack
+
+```mermaid
+graph TD
+    User([📱 Traveler / Mobile App]) <--> FlutterApp[Flutter Mobile Frontend]
+    FlutterApp <--> NodeBackend[Node.js / Express API Server]
+    
+    subgraph Google Cloud & AI Platform
+        NodeBackend <--> Gemini[Google Gemini AI / Vertex AI]
+        NodeBackend <--> Maps[Google Maps & Geolocation API]
+        NodeBackend <--> Speech[Cloud Speech-to-Text & Text-to-Speech]
+        NodeBackend <--> Weather[Google Weather API]
+    end
+
+    subgraph Authentication & External Services
+        FlutterApp <--> Firebase[Firebase Auth]
+        NodeBackend <--> Currency[CurrencyAPI Real-Time Rates]
+    end
+```
+
+### 💻 Technologies & APIs
+
+| Layer | Stack / Tool | Description |
+| :--- | :--- | :--- |
+| **Frontend** | ![Flutter](https://img.shields.io/badge/-Flutter-02569B?logo=flutter&logoColor=white) ![Dart](https://img.shields.io/badge/-Dart-0175C2?logo=dart&logoColor=white) | Cross-platform mobile UI for Android & Web |
+| **Backend** | ![Node.js](https://img.shields.io/badge/-Node.js-339933?logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/-Express.js-000000?logo=express&logoColor=white) | RESTful API server handling business logic & integrations |
+| **AI Engine** | ![Google Gemini](https://img.shields.io/badge/-Google%20Gemini-4285F4?logo=google&logoColor=white) | Core intelligence for recommendations, pricing, & translation |
+| **Cloud Services** | ![Firebase](https://img.shields.io/badge/-Firebase-FFCA28?logo=firebase&logoColor=black) ![GCP](https://img.shields.io/badge/-Google%20Cloud-4285F4?logo=googlecloud&logoColor=white) | Auth, Speech-to-Text, Text-to-Speech, Maps, GeoCoding, Weather |
+| **Financial API** | `CurrencyAPI` | Live foreign currency exchange & conversion calculation |
+
+---
+
+## 🚀 Quick Start Guide
+
+### Prerequisites
+* [Flutter SDK](https://docs.flutter.dev/get-started/install) (v3.0+)
+* [Node.js](https://nodejs.org/) (v18.0+)
+* Android Studio / Android Emulator or physical device
+
+---
+
+### 1️⃣ Frontend Setup (Flutter)
+
+```bash
+# Navigate to the frontend workspace
+cd front
+
+# Get flutter dependencies
+flutter pub get
+
+# Run static analysis
+flutter analyze
+
+# Run on connected Android device/emulator
+flutter run
+```
+
+---
+
+### 2️⃣ Backend Setup (Node.js)
+
+```bash
+# Open a new terminal and navigate to the backend directory
+cd back
+
+# Install package dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+---
+
+## 👥 Meet Team GOOGLEISTS
+
+<div align="center">
+
+| Developer | Role | Profile |
+| :--- | :--- | :--- |
+| **Mohammad Al-Majali** | Backend Lead | [![GitHub](https://img.shields.io/badge/-MavisVermie-181717?logo=github)](https://github.com/MavisVermie) |
+| **Marah Al-Qunbor** | Backend Engineer | [![GitHub](https://img.shields.io/badge/-MarahYousef01-181717?logo=github)](https://github.com/MarahYousef01/) |
+| **Rama Al-Odat** | Frontend Lead | [![GitHub](https://img.shields.io/badge/-Ramaalodat-181717?logo=github)](https://github.com/Ramaalodat) |
+| **Mohammad Al-Ali** | Frontend Engineer | [![GitHub](https://img.shields.io/badge/-Developer-181717?logo=github)](#) |
+
+</div>
+
+---
+
+<div align="center">
+
+  <b>Made with ❤️ by Team GOOGLEISTS</b><br>
+  *Happy Travels with PathFinder AI! 🌍✈️*
+
+</div>
+
