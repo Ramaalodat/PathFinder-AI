@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Translation & Text-to-Speech</title>
+  <style>
+    body { 
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; 
+      margin: 0; 
+      padding: 20px; 
+      background: #f8fafc;
+    }
+    .container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+    }
+    .card { 
+      border: 1px solid #e5e7eb; 
+      border-radius: 12px; 
+      padding: 24px; 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+      background: white;
+      margin-bottom: 20px;
+    }
+    .row { 
+      display: flex; 
+      gap: 12px; 
+      flex-wrap: wrap; 
+      align-items: center; 
+      margin-bottom: 16px;
+    }
+    .col { 
+      flex: 1; 
+      min-width: 200px; 
+    }
+    .translation-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .text-area {
+      position: relative;
+    }
+    .text-input {
+      width: 100%;
+      min-height: 120px;
+      padding: 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+    .text-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+    .text-controls {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      gap: 8px;
+    }
+    .play-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .play-btn:hover {
+      background: #2563eb;
+      transform: scale(1.05);
+    }
+    .play-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .play-btn.playing {
+      background: #ef4444;
+    }
+    .language-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .language-selector select {
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+    }
+    .swap-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .swap-btn:hover {
+      background: #f3f4f6;
+    }
+    label { 
+      font-size: 14px; 
+      color: #374151; 
+      font-weight: 500;
+      display: block;
+      margin-bottom: 4px;
+    }
+    input, select, button { 
+      padding: 10px 12px; 
+      font-size: 14px; 
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+    }
+    button { 
+      cursor: pointer; 
+      background: white; 
+      transition: all 0.2s;
+      pointer-events: auto;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    button.primary { 
+      background: #3b82f6; 
+      color: white; 
+      border-color: #3b82f6; 
+    }
+    button.primary:hover {
+      background: #2563eb;
+    }
+    button:disabled { 
+      opacity: 0.6; 
+      cursor: not-allowed; 
+    }
+    .mono { 
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; 
+    }
+    .log { 
+      white-space: pre-wrap; 
+      background: #f9fafb; 
+      border: 1px dashed #e5e7eb; 
+      padding: 12px; 
+      border-radius: 8px; 
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .pill { 
+      display: inline-block; 
+      padding: 4px 8px; 
+      border-radius: 999px; 
+      background: #eef2ff; 
+      color: #3730a3; 
+      font-size: 12px; 
+      font-weight: 500;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .audio-section {
+      border-top: 1px solid #e5e7eb;
+      padding-top: 20px;
+      margin-top: 20px;
+    }
+    .audio-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin: 12px 0;
+    }
+    .audio-player {
+      width: 100%;
+      margin: 12px 0;
+    }
+    .error {
+      color: #ef4444;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin: 8px 0;
+    }
+    .success {
+      color: #059669;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin: 8px 0;
+    }
+    @media (max-width: 768px) {
+      .translation-container {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 0 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="card">
+      <h1 style="margin: 0 0 8px 0; color: #1f2937;">AI Translation & Text-to-Speech</h1>
+      <p style="margin: 0; color: #6b7280;">Translate text and convert to speech with Google Translate-like interface</p>
+    </div>
+
+    <!-- Translation Interface -->
+    <div class="card">
+      <h2 style="margin: 0 0 20px 0;">Text Translation</h2>
+      
+      <!-- Language Selection -->
+      <div class="row">
+        <div class="col">
+          <label>Source Language</label>
+          <select id="sourceLanguage">
+            <option value="auto">Auto-detect</option>
+            <option value="en" selected>English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="ru">Russian</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="zh">Chinese</option>
+            <option value="ar">Arabic</option>
+            <option value="hi">Hindi</option>
+            <option value="th">Thai</option>
+            <option value="vi">Vietnamese</option>
+          </select>
+        </div>
+        <div style="display: flex; align-items: end; padding-bottom: 8px;">
+          <button id="swapLanguages" class="swap-btn" title="Swap languages">⇄</button>
+        </div>
+        <div class="col">
+          <label>Target Language</label>
+          <select id="targetLanguage">
+            <option value="en">English</option>
+            <option value="es" selected>Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="ru">Russian</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="zh">Chinese</option>
+            <option value="ar">Arabic</option>
+            <option value="hi">Hindi</option>
+            <option value="th">Thai</option>
+            <option value="vi">Vietnamese</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Translation Text Areas -->
+      <div class="translation-container">
+        <!-- Source Text -->
+        <div class="text-area">
+          <div class="language-selector">
+            <label id="sourceLanguageLabel">English</label>
+            <button id="playSource" class="play-btn" title="Play source text" disabled>▶</button>
+          </div>
+          <textarea 
+            id="sourceText" 
+            class="text-input" 
+            placeholder="Enter text to translate..."
+            rows="6"
+          ></textarea>
+        </div>
+
+        <!-- Target Text -->
+        <div class="text-area">
+          <div class="language-selector">
+            <label id="targetLanguageLabel">Spanish</label>
+            <button id="playTarget" class="play-btn" title="Play translated text" disabled>▶</button>
+          </div>
+          <textarea 
+            id="targetText" 
+            class="text-input" 
+            placeholder="Translation will appear here..."
+            rows="6"
+            readonly
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Translation Controls -->
+      <div class="row">
+        <button id="translateBtn" class="primary" disabled>Translate</button>
+        <button id="clearBtn">Clear All</button>
+        <div class="status" id="translationStatus" style="display: none;">
+          <div class="loading"></div>
+          <span>Translating...</span>
+        </div>
+      </div>
+
+      <!-- API Configuration -->
+      <details style="margin-top: 20px;">
+        <summary style="cursor: pointer; font-weight: 500; color: #374151;">API Configuration</summary>
+        <div style="margin-top: 12px; padding: 16px; background: #f9fafb; border-radius: 8px;">
+          <div class="row">
+            <div class="col">
+              <label>API Base URL</label>
+              <input id="baseUrl" class="mono" value="http://localhost:3000" />
+            </div>
+            <div class="col">
+              <label>Chatflow ID</label>
+              <input id="chatflowId" placeholder="DEFAULT_TRANSLATION_CHATFLOW_ID used if blank" />
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+
+    <!-- Audio Translation Section -->
+    <div class="card audio-section">
+      <h2 style="margin: 0 0 20px 0;">Audio Translation</h2>
+      <p style="margin: 0 0 20px 0; color: #6b7280;">Record or upload audio for complete translation pipeline</p>
+
+      <!-- Audio Controls -->
+      <div class="audio-controls">
+        <button id="btnRecord" class="primary">Start Recording</button>
+        <button id="btnStop" disabled>Stop</button>
+        <input type="file" id="fileInput" accept="audio/*" />
+        <span id="recStatus" class="pill">Idle</span>
+      </div>
+
+      <audio id="player" class="audio-player" controls style="display: none;"></audio>
+
+      <div class="row">
+        <button id="btnSend" class="primary" disabled>Translate Audio</button>
+        <span id="uploadHint" class="pill">Record or select an audio file</span>
+      </div>
+    </div>
+
+    <!-- Image Translation Section -->
+    <div class="card audio-section">
+      <h2 style="margin: 0 0 20px 0;">🖼️ Image Translation</h2>
+      <p style="margin: 0 0 20px 0; color: #6b7280;">Upload an image to translate any text found in it</p>
+
+      <!-- Image Upload -->
+      <div class="audio-controls">
+        <input type="file" id="imageFileInput" accept="image/*" />
+        <span id="imageStatus" class="pill">Select an image</span>
+      </div>
+
+      <!-- Image Preview -->
+      <div id="imagePreview" style="margin: 12px 0; text-align: center;"></div>
+
+      <div class="row">
+        <button id="btnTranslateImage" class="primary" disabled>Translate Image</button>
+        <span id="imageHint" class="pill">Select an image file to translate</span>
+      </div>
+    </div>
+
+    <!-- Response Log -->
+    <div class="card">
+      <h3 style="margin: 0 0 12px 0;">Response Log</h3>
+      <div id="output" class="log">Ready to translate...</div>
+    </div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const sourceText = document.getElementById('sourceText');
+    const targetText = document.getElementById('targetText');
+    const sourceLanguage = document.getElementById('sourceLanguage');
+    const targetLanguage = document.getElementById('targetLanguage');
+    const sourceLanguageLabel = document.getElementById('sourceLanguageLabel');
+    const targetLanguageLabel = document.getElementById('targetLanguageLabel');
+    const translateBtn = document.getElementById('translateBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const swapLanguages = document.getElementById('swapLanguages');
+    const playSource = document.getElementById('playSource');
+    const playTarget = document.getElementById('playTarget');
+    const translationStatus = document.getElementById('translationStatus');
+    const output = document.getElementById('output');
+    const baseUrl = document.getElementById('baseUrl');
+    const chatflowId = document.getElementById('chatflowId');
+
+    // Audio elements
+    const btnRecord = document.getElementById('btnRecord');
+    const btnStop = document.getElementById('btnStop');
+    const btnSend = document.getElementById('btnSend');
+    const fileInput = document.getElementById('fileInput');
+    const player = document.getElementById('player');
+    const recStatus = document.getElementById('recStatus');
+    const uploadHint = document.getElementById('uploadHint');
+
+    // Image elements
+    const imageFileInput = document.getElementById('imageFileInput');
+    const btnTranslateImage = document.getElementById('btnTranslateImage');
+    const imageStatus = document.getElementById('imageStatus');
+    const imageHint = document.getElementById('imageHint');
+    const imagePreview = document.getElementById('imagePreview');
+
+    // State
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let lastBlob = null;
+    let lastMime = 'audio/webm';
+    let currentAudio = null;
+    let isProcessing = false; // Prevent duplicate requests
+    let lastImageBlob = null; // For image translation
+
+    // Language mapping
+    const languageNames = {
+      'auto': 'Auto-detect',
+      'en': 'English',
+      'es': 'Spanish',
+      'fr': 'French',
+      'de': 'German',
+      'it': 'Italian',
+      'pt': 'Portuguese',
+      'ru': 'Russian',
+      'ja': 'Japanese',
+      'ko': 'Korean',
+      'zh': 'Chinese',
+      'ar': 'Arabic',
+      'hi': 'Hindi',
+      'th': 'Thai',
+      'vi': 'Vietnamese'
+    };
+
+    // Language code mapping for TTS
+    const languageCodes = {
+      'en': 'en-US',
+      'es': 'es-ES',
+      'fr': 'fr-FR',
+      'de': 'de-DE',
+      'it': 'it-IT',
+      'pt': 'pt-PT',
+      'ru': 'ru-RU',
+      'ja': 'ja-JP',
+      'ko': 'ko-KR',
+      'zh': 'cmn-CN', // Fixed: Use cmn-CN for Mandarin Chinese
+      'ar': 'ar-XA',
+      'hi': 'hi-IN',
+      'th': 'th-TH',
+      'vi': 'vi-VN'
+    };
+
+    // Initialize
+    function init() {
+      console.log('Initializing application...');
+      
+      // Debug: Check if all elements exist
+      console.log('Source text element:', sourceText);
+      console.log('Target text element:', targetText);
+      console.log('Translate button:', translateBtn);
+      console.log('Clear button:', clearBtn);
+      console.log('Swap button:', swapLanguages);
+      console.log('Play source button:', playSource);
+      console.log('Play target button:', playTarget);
+      
+      try {
+        updateLanguageLabels();
+        updateTranslateButton();
+        
+        // Event listeners
+        sourceText.addEventListener('input', updateTranslateButton);
+        sourceLanguage.addEventListener('change', updateLanguageLabels);
+        targetLanguage.addEventListener('change', updateLanguageLabels);
+        translateBtn.addEventListener('click', (e) => {
+          console.log('Translate button clicked');
+          e.preventDefault();
+          if (!isProcessing) {
+            translateText();
+          }
+        });
+        clearBtn.addEventListener('click', (e) => {
+          console.log('Clear button clicked');
+          e.preventDefault();
+          clearAll();
+        });
+        swapLanguages.addEventListener('click', (e) => {
+          console.log('Swap languages button clicked');
+          e.preventDefault();
+          swapLanguagesHandler();
+        });
+        playSource.addEventListener('click', (e) => {
+          console.log('Play source button clicked');
+          e.preventDefault();
+          if (!isProcessing) {
+            playText(sourceText.value, sourceLanguage.value, 'source');
+          }
+        });
+        playTarget.addEventListener('click', (e) => {
+          console.log('Play target button clicked');
+          e.preventDefault();
+          if (!isProcessing) {
+            playText(targetText.value, targetLanguage.value, 'target');
+          }
+        });
+        
+        // Audio event listeners
+        btnRecord.addEventListener('click', (e) => {
+          console.log('Record button clicked');
+          e.preventDefault();
+          startRecording();
+        });
+        btnStop.addEventListener('click', (e) => {
+          console.log('Stop button clicked');
+          e.preventDefault();
+          stopRecording();
+        });
+        fileInput.addEventListener('change', handleFileSelect);
+        btnSend.addEventListener('click', (e) => {
+          console.log('Send audio button clicked');
+          e.preventDefault();
+          if (!isProcessing) {
+            translateAudio();
+          }
+        });
+
+        // Image event listeners
+        imageFileInput.addEventListener('change', handleImageSelect);
+        btnTranslateImage.addEventListener('click', (e) => {
+          console.log('Translate image button clicked');
+          e.preventDefault();
+          if (!isProcessing) {
+            translateImage();
+          }
+        });
+        
+        console.log('Application initialized successfully');
+        log('Application loaded and ready');
+      } catch (error) {
+        console.error('Initialization error:', error);
+        log(`Initialization error: ${error.message}`, 'error');
+      }
+    }
+
+    function updateLanguageLabels() {
+      const sourceLang = sourceLanguage.value;
+      const targetLang = targetLanguage.value;
+      sourceLanguageLabel.textContent = languageNames[sourceLang] || sourceLang;
+      targetLanguageLabel.textContent = languageNames[targetLang] || targetLang;
+    }
+
+    function updateTranslateButton() {
+      const hasText = sourceText.value.trim().length > 0;
+      translateBtn.disabled = !hasText;
+    }
+
+    function swapLanguagesHandler() {
+      const sourceLang = sourceLanguage.value;
+      const targetLang = targetLanguage.value;
+      const sourceTextValue = sourceText.value;
+      const targetTextValue = targetText.value;
+
+      sourceLanguage.value = targetLang;
+      targetLanguage.value = sourceLang;
+      sourceText.value = targetTextValue;
+      targetText.value = sourceTextValue;
+
+      updateLanguageLabels();
+      updateTranslateButton();
+    }
+
+    function clearAll() {
+      sourceText.value = '';
+      targetText.value = '';
+      updateTranslateButton();
+      playSource.disabled = true;
+      playTarget.disabled = true;
+      log('Cleared all text');
+    }
+
+    async function translateText() {
+      const text = sourceText.value.trim();
+      if (!text || isProcessing) return;
+
+      isProcessing = true;
+      showTranslationStatus(true);
+      log('Translating text...');
+
+      const requestData = {
+        message: text,
+        chatflowId: chatflowId.value.trim() || 'dadae924-7c24-4d80-8e8f-3d405d18ad57',
+        sourceLanguage: sourceLanguage.value,
+        targetLanguage: targetLanguage.value,
+        audioFormat: 'mp3',
+        includeAudioInResponse: true
+      };
+      
+      log(`Sending request: ${JSON.stringify(requestData, null, 2)}`);
+
+      try {
+        const response = await fetch(`${baseUrl.value}/api/translation/translate-and-speak`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData)
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          targetText.value = data.data.translatedText;
+          playTarget.disabled = false;
+          log(`Translation successful: "${data.data.originalText}" → "${data.data.translatedText}"`);
+          
+          // Store audio for target text
+          if (data.data.audioContent) {
+            const audioBlob = new Blob([Uint8Array.from(atob(data.data.audioContent), c => c.charCodeAt(0))], { type: 'audio/mp3' });
+            targetText.audioBlob = audioBlob;
+          }
+        } else {
+          log(`Translation failed: ${data.error || data.message}`, 'error');
+          log(`Response data: ${JSON.stringify(data, null, 2)}`, 'error');
+        }
+      } catch (error) {
+        log(`Translation error: ${error.message}`, 'error');
+        } finally {
+          showTranslationStatus(false);
+          isProcessing = false;
+        }
+      }
+
+    async function playText(text, language, type) {
+      if (!text.trim() || isProcessing) return;
+
+      isProcessing = true;
+      const button = type === 'source' ? playSource : playTarget;
+      const originalText = button.textContent;
+      
+      try {
+        button.disabled = true;
+        button.classList.add('playing');
+        button.textContent = '⏸';
+
+        // Check if we already have audio for this text
+        if (type === 'target' && targetText.audioBlob) {
+          const audio = new Audio(URL.createObjectURL(targetText.audioBlob));
+          currentAudio = audio;
+          
+          audio.onended = () => {
+            button.disabled = false;
+            button.classList.remove('playing');
+            button.textContent = originalText;
+            currentAudio = null;
+            isProcessing = false;
+          };
+          
+          audio.play();
+          return;
+        }
+
+        // Generate new audio
+        const languageCode = languageCodes[language] || 'en-US';
+        const response = await fetch(`${baseUrl.value}/api/translation/text-to-speech`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: text,
+            languageCode: languageCode,
+            audioFormat: 'mp3'
+          })
+        });
+
+        if (response.ok) {
+          const audioBlob = await response.blob();
+          const audio = new Audio(URL.createObjectURL(audioBlob));
+          currentAudio = audio;
+          
+          audio.onended = () => {
+            button.disabled = false;
+            button.classList.remove('playing');
+            button.textContent = originalText;
+            currentAudio = null;
+            isProcessing = false;
+          };
+          
+          audio.play();
+          log(`Playing ${type} text: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
+        } else {
+          throw new Error('Failed to generate speech');
+        }
+      } catch (error) {
+        log(`Speech generation failed: ${error.message}`, 'error');
+        button.disabled = false;
+        button.classList.remove('playing');
+        button.textContent = originalText;
+        isProcessing = false;
+      }
+    }
+
+    function showTranslationStatus(show) {
+      translationStatus.style.display = show ? 'flex' : 'none';
+    }
+
+    function log(message, type = 'info') {
+      const timestamp = new Date().toLocaleTimeString();
+      const logEntry = `[${timestamp}] ${message}\n`;
+      output.textContent += logEntry;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    // Audio recording functions
+    function setReady(state) {
+      btnSend.disabled = !state;
+      uploadHint.textContent = state ? 'Ready to translate audio' : 'Record or select an audio file';
+    }
+
+    function setStatus(text) {
+      recStatus.textContent = text;
+    }
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            noiseSuppression: false,
+            echoCancellation: false,
+            autoGainControl: true,
+            channelCount: 2,
+            sampleRate: 48000
+          }
+        });
+        
+        const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+        mediaRecorder = new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: 256000 });
+        lastMime = mime.split(';')[0];
+        recordedChunks = [];
+
+        mediaRecorder.ondataavailable = (e) => { 
+          if (e.data && e.data.size > 0) recordedChunks.push(e.data); 
+        };
+        
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(recordedChunks, { type: lastMime });
+          lastBlob = blob;
+          player.src = URL.createObjectURL(blob);
+          player.style.display = 'block';
+          setReady(true);
+          setStatus('Recorded');
+          log('Audio recorded successfully');
+        };
+
+        mediaRecorder.start();
+        setStatus('Recording…');
+        btnRecord.disabled = true;
+        btnStop.disabled = false;
+        log('Started recording...');
+      } catch (err) {
+        setStatus('Mic blocked');
+        log(`Recording failed: ${err.message}`, 'error');
+        console.error(err);
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(t => t.stop());
+      }
+      btnRecord.disabled = false;
+      btnStop.disabled = true;
+      log('Stopped recording');
+    }
+
+    function handleFileSelect() {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      
+      lastBlob = file;
+      lastMime = file.type || 'audio/mpeg';
+      player.src = URL.createObjectURL(file);
+      player.style.display = 'block';
+      setReady(true);
+      setStatus('File selected');
+      log(`Audio file selected: ${file.name}`);
+    }
+
+    async function translateAudio() {
+      if (!lastBlob || isProcessing) { 
+        if (isProcessing) log('Already processing, please wait...', 'error');
+        else alert('No audio selected/recorded'); 
+        return; 
+      }
+      
+      isProcessing = true;
+      log('Translating audio...');
+      setReady(false);
+
+      const form = new FormData();
+      form.append('file', lastBlob, `audio.${guessExt(lastMime)}`);
+      form.append('sourceLanguage', sourceLanguage.value);
+      form.append('targetLanguage', targetLanguage.value);
+      form.append('audioFormat', 'mp3');
+      form.append('includeAudioInResponse', 'true');
+      form.append('chatflowId', chatflowId.value.trim() || 'dadae924-7c24-4d80-8e8f-3d405d18ad57');
+
+      try {
+        const response = await fetch(`${baseUrl.value}/api/translation/audio-translate-speak`, {
+          method: 'POST',
+          body: form
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Update text areas
+          sourceText.value = data.data.originalText;
+          targetText.value = data.data.translatedText;
+          
+          // Enable play buttons
+          playSource.disabled = false;
+          playTarget.disabled = false;
+          
+          // Store audio for target text
+          if (data.data.audioContent) {
+            const audioBlob = new Blob([Uint8Array.from(atob(data.data.audioContent), c => c.charCodeAt(0))], { type: 'audio/mp3' });
+            targetText.audioBlob = audioBlob;
+          }
+          
+          log(`Audio translation successful: "${data.data.originalText}" → "${data.data.translatedText}"`);
+          log(`Audio format: ${data.data.audio?.format}, Size: ${data.data.audio?.size} bytes`);
+        } else {
+          log(`Audio translation failed: ${data.error}`, 'error');
+        }
+      } catch (error) {
+        log(`Audio translation error: ${error.message}`, 'error');
+      } finally {
+        setReady(true);
+        isProcessing = false;
+      }
+    }
+
+    // Image handling functions
+    function handleImageSelect() {
+      const file = imageFileInput.files && imageFileInput.files[0];
+      if (!file) return;
+      
+      lastImageBlob = file;
+      imageStatus.textContent = 'Image selected';
+      imageHint.textContent = 'Ready to translate image';
+      btnTranslateImage.disabled = false;
+      
+      // Show image preview
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imagePreview.innerHTML = `
+          <img src="${e.target.result}" style="max-width: 100%; max-height: 300px; border-radius: 8px; border: 1px solid #e5e7eb;" alt="Preview">
+          <div style="margin-top: 8px; font-size: 12px; color: #6b7280;">
+            <strong>File:</strong> ${file.name} | 
+            <strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB | 
+            <strong>Type:</strong> ${file.type}
+          </div>
+        `;
+      };
+      reader.readAsDataURL(file);
+      
+      log(`Image file selected: ${file.name}`);
+    }
+
+    async function translateImage() {
+      if (!lastImageBlob || isProcessing) { 
+        if (isProcessing) log('Already processing, please wait...', 'error');
+        else alert('No image selected'); 
+        return; 
+      }
+      
+      isProcessing = true;
+      log('Translating image...');
+      btnTranslateImage.disabled = true;
+      imageHint.textContent = 'Processing image...';
+
+      const form = new FormData();
+      form.append('file', lastImageBlob);
+      form.append('sourceLanguage', sourceLanguage.value);
+      form.append('targetLanguage', targetLanguage.value);
+      form.append('chatflowId', chatflowId.value.trim() || 'dadae924-7c24-4d80-8e8f-3d405d18ad57');
+      form.append('prompt', 'Please analyze this image and translate any text you find from {sourceLanguage} to {targetLanguage}. If no text is found, describe what you see in the image.');
+
+      try {
+        const response = await fetch(`${baseUrl.value}/api/translation/image`, {
+          method: 'POST',
+          body: form
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          // Update text areas with original and translated text
+          sourceText.value = data.data.originalText || 'Text extracted from image';
+          targetText.value = data.data.translatedText || data.data.fullAnalysis;
+          
+          // Enable play buttons
+          playSource.disabled = false;
+          playTarget.disabled = false;
+          
+          log(`Image translation successful!`);
+          log(`Original text: ${data.data.originalText}`);
+          log(`Translated text: ${data.data.translatedText}`);
+          log(`Image: ${data.data.originalImage.filename} (${data.data.originalImage.mimetype})`);
+        } else {
+          log(`Image translation failed: ${data.error}`, 'error');
+        }
+      } catch (error) {
+        log(`Image translation error: ${error.message}`, 'error');
+      } finally {
+        btnTranslateImage.disabled = false;
+        imageHint.textContent = 'Ready to translate image';
+        isProcessing = false;
+      }
+    }
+
+    // Utility functions
+    function guessExt(mime) {
+      if (!mime) return 'webm';
+      if (mime.includes('wav')) return 'wav';
+      if (mime.includes('mp3') || mime.includes('mpeg')) return 'mp3';
+      if (mime.includes('ogg')) return 'ogg';
+      if (mime.includes('webm')) return 'webm';
+      if (mime.includes('flac')) return 'flac';
+      return 'bin';
+    }
+
+    // Initialize the application when DOM is loaded
+    let initialized = false;
+    
+    function initializeApp() {
+      if (!initialized) {
+        console.log('Initializing app...');
+        init();
+        initialized = true;
+      }
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+      initializeApp();
+    }
+    
+    // Also try window.onload as backup
+    window.addEventListener('load', () => {
+      console.log('Window loaded, checking if app is initialized...');
+      initializeApp();
+    });
+  </script>
+</body>
+</html>
+
+
